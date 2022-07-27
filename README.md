@@ -11,7 +11,7 @@ The goal is create a **simple** PHP MVC framework in order to improve my knowled
 
 <br>
 
-- [ ]Container (Dependency Injection)
-- [ ]Router (map url to controller method):
-- [ ]Middleware (do something with the request before going into the controller)
-- [ ]View Components (segregation of views to reduce duplicate code)
+- [ ] Container (Dependency Injection)
+- [ ] Router (map url to controller method):
+- [ ] Middleware (do something with the request before going into the controller)
+- [ ] View Components (segregation of views to reduce duplicate code)
