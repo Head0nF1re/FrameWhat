@@ -1,7 +1,7 @@
 # FrameWhat
 
 FrameWhat is a project that was created to answer the question: **what** is the **frame**work doing?
-That is, improve my knowledge by learning how to **build some of the "hidden magic" around frameworks like Laravel**.
+The goal is create a **simple** PHP MVC framework in order to improve my knowledge by learning how to **build some of the "hidden magic" around frameworks like Laravel**.
 
 <br>
 
@@ -12,6 +12,6 @@ That is, improve my knowledge by learning how to **build some of the "hidden mag
 <br>
 
 - [ ]Container (Dependency Injection)
-- [ ]Router (map url to controller method)
-- [ ]Middleware (protect routes)
+- [ ]Router (map url to controller method):
+- [ ]Middleware (do something with the request before going into the controller)
 - [ ]View Components (segregation of views to reduce duplicate code)
