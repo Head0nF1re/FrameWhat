@@ -55,7 +55,7 @@ class Container implements ContainerInterface
      */
     public function has(string $id): bool
     {
-        return in_array($id, $this->entries);
+        return array_key_exists($id, $this->entries);
     }
 
     public function set(string $id, Closure $callable): void
@@ -77,8 +77,7 @@ class Container implements ContainerInterface
             );
         }
 
-
-        if($class->getConstructor() === null ) {
+        if($class->getConstructor() === null) {
             return $class->newInstance();
         }
 

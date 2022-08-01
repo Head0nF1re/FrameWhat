@@ -2,12 +2,21 @@
 
 namespace Core;
 
+use App\Http\Controllers\TestController;
 use Core\Container\Container;
+use Psr\Container\ContainerInterface;
 
 class App extends Container
 {
     public function run()
     {
+        // Testing manual binding
+        $this->set(
+            ContainerInterface::class,
+            fn($c) => $c->resolve(TestController::class)
+        );
+
+        dd($this->get(ContainerInterface::class));
         /*
          *  Testing
          */
