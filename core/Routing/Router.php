@@ -4,12 +4,16 @@ namespace Core\Routing;
 
 class Router
 {
+    public string $controller;
+
+    public string $controllerMethod;
+
     private array $routes;
 
-    public function resolve(string $method, string $uri)
+    public function match(string $method, string $uri)
     {
-        $controller = new $this->routes[$method][$uri][0]();
-        $controller->{$this->routes[$method][$uri][1]}();
+        $this->controller = $this->routes[$method][$uri][0];
+        $this->controllerMethod = $this->routes[$method][$uri][1];
     }
 
     public function __call($name, $arguments)
