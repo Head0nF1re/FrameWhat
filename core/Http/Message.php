@@ -2,6 +2,7 @@
 
 namespace Core\Http;
 
+use InvalidArgumentException;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -156,11 +157,6 @@ class Message implements MessageInterface
      */
     public function getHeaderLine($name)
     {
-        /*
-         * I believe PSR-7 should recommend a different delimiter when
-         * returning as string since (as they acknowledge in the comments
-         * above) header values can have commas.
-         */
         return implode(', ', $this->getHeader($name));
     }
 
@@ -181,7 +177,13 @@ class Message implements MessageInterface
      */
     public function withHeader($name, $value)
     {
+        $this->validateName($name);
+        $value = $this->validateValue($value);
 
+        $clone = clone $this;
+        $clone->headers[$name] = $value;
+
+        return $clone;
     }
 
     /**
@@ -202,7 +204,24 @@ class Message implements MessageInterface
      */
     public function withAddedHeader($name, $value)
     {
+        $this->validateName($name);
+        $value = $this->validateValue($value);
 
+        $clone = clone $this;
+
+        if (! $clone->hasHeader($name)) {
+            $clone->headers[$name] = $value;
+
+        } else {
+            // if value is not present in the headers[$name] array, add it
+            array_map(function(string $v) use($name, $clone) {
+                if (! in_array($v, $clone->getHeader($name))) {
+                    return $clone->headers[$name][] = $v;
+                }
+            }, $value);
+        }
+
+        return $clone;
     }
 
     /**
@@ -219,7 +238,14 @@ class Message implements MessageInterface
      */
     public function withoutHeader($name)
     {
+        if (! $this->hasHeader($name)) {
+            return $this;
+        }
 
+        $clone = clone $this;
+        unset($clone->headers[$name]);
+
+        return $clone;
     }
 
     /**
@@ -261,4 +287,52 @@ class Message implements MessageInterface
         return array_change_key_case($this->headers, CASE_LOWER);
     }
 
+    /*
+     * Validate header name
+     *
+     * @link https://httpwg.org/specs/rfc7230.html#header.fields
+     * @link https://httpwg.org/specs/rfc7230.html#field.components
+     */
+    private function validateName(string $name): void
+    {
+        if (! preg_match("/^[a-zA-Z0-9!#$%&'*+\-.^_`|~]+$/", $name)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Invalid header name: %s',
+                    $name,
+                )
+            );
+        }
+    }
+
+    /*
+     * Validate header value
+     *
+     * @link https://httpwg.org/specs/rfc7230.html#header.fields
+     * @link https://httpwg.org/specs/rfc7230.html#field.components
+     */
+    private function validateValue(string|array $value): array
+    {
+        if (! is_array($value)) {
+            $value = [$value];
+        }
+
+       $value = array_map(function(string $v) {
+
+            $v = trim($v, ' \t');
+
+            if (! preg_match('/^[\x09\x20\x21-\x7E\x80\xFF]*$/', $v)) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Invalid header value: %s',
+                        $v,
+                    )
+                );
+            }
+
+            return $v;
+        }, $value);
+
+        return $value;
+    }
 }
